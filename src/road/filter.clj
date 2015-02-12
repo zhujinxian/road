@@ -13,7 +13,7 @@
       :main false)
 
 (defn -init [this conf]
-    (println (str "init filter" (class FilterConfig) )))
+  (load-file "web.clj"))
 
 (defn -doFilter [this request response filter-chain]
   (println "do filter"))
