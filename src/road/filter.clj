@@ -12,11 +12,16 @@
       :prefix "-"
       :main false)
 
+(def app)
+
 (defn -init [this conf]
-  (load-file "web.clj"))
+  (def app (load-file (-> (.getServletContext conf)
+    		   (.getRealPath "WEB-INF/classes/web.clj")))))
 
 (defn -doFilter [this request response filter-chain]
-  (println "do filter"))
+  (println "do filter")  
+    (.setStatus response 200) 
+      (.write (.getWriter response) (app request)))
 
 (defn -destroy [this]
   (println "destroy filter"))

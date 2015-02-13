@@ -4,22 +4,12 @@
 
 
 (defn- prepare-route [route]
-  (cond
-    (string? route)
-    `(clout/route-compile ~route)
-    (vector? route)
-    `(clout/route-compile
-       ~(first route)
-       ~(apply hash-map (rest route)))
-       :else
-       `(if (string? ~route)
-          (clout/route-compile ~route)
-          ~route)))
+  #(re-matches (re-pattern route) %))
 
 
 (defn- if-route [route handler]
   (fn [request]
-    (if (clout/route-matches route request)
+    (if (route (.getContextPath request))
       (handler request))))
 
 
