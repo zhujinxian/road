@@ -19,10 +19,11 @@
     		   (.getRealPath "WEB-INF/classes/web.clj")))))
 
 (defn -doFilter [this request response filter-chain]
-  (println "do filter")  
+  (println "do filter") (println (str app)) 
     (.setStatus response 200) 
       (.write (.getWriter response) (app request)))
 
 (defn -destroy [this]
   (println "destroy filter"))
+
 
