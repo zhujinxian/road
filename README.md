@@ -6,6 +6,7 @@ Road is a clojure web framework for packing java severlet filter.
 
 web.clj
 
+```clojure
 (ns web.main
   (:use [road.router]))
 
@@ -20,7 +21,7 @@ web.clj
 (defroutes app 
   (GET "/web-test-0.1.0-SNAPSHOT-standalone" open-home)
   (GET "/home/test/hello/:test" home))
-
+```
 
 ## License
 
