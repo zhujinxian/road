@@ -14,40 +14,42 @@
 (defn- convert-type-to-string [args]
   (-> (map str args) vec))
 
-(defn- get-request-para [name req]
-  (.getParameter req name))
+(defn- get-request-para [name req paras]
+  (or (.getParameter req name) ((keyword name) paras)))
 
-(defn- get-para [arg req]
+(defn- get-para [arg req paras] 
   (if (= "req" arg) req 
-    (-> arg str (get-request-para req) (convert (get-tag arg)))))
+    (-> arg str (get-request-para req paras) (convert (get-tag arg)))))
 
-(defn- get-all-paras [req args]
-  (map #(get-para % req) args))
+(defn- get-all-paras [req paras args]
+  (map #(get-para % req paras) args))
 
-(defn parse-arguments [f req]
-  (-> (meta f) :arglists first (#(get-all-paras req %))  vec))
+(defn parse-arguments [f req paras]
+  (-> (meta f) :arglists first (#(get-all-paras req paras %))  vec))
 
 (defn- prepare-route [route]
-  #(re-matches (re-pattern route) %))
+  ;#(re-matches (re-pattern route) %))
+  (clout/route-compile route))
 
 (defn- if-route [route handler]
   (fn [request]
-    (if (route (.getServletPath request))
-      (handler request))))
+    (let [ret  (clout/route-matches route (.getServletPath request))]
+      (println ret)
+      (if-not (nil? ret) (handler request ret) (println "not found url"))))) 
 
 (defn- if-method [method handler]
   (fn [request]
     (if (= method (. request getMethod)) 
            (handler request))))
 
-(defn- process-request [handler request]
-  (apply handler (parse-arguments handler request)))
+(defn- process-request [handler request paras]
+  (apply handler (parse-arguments handler request paras)))
 
 (defn make-route  [method path handler]
   (if-method method
              (if-route path
-                       (fn [request]
-                         (process-request handler request)))))
+                       (fn [request paras]
+                         (process-request handler request paras)))))
 
 (defn compile-route [method path handler]
   `(make-route
@@ -65,6 +67,9 @@
 
 (defmacro GET [path handler]
   (compile-route "GET" path handler))
+
+(defmacro POST [path handler]
+  (compile-route "POST" path handler))
 
 (defn route-test [msg]
   (println msg))

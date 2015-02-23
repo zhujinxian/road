@@ -6,5 +6,5 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [javax.servlet/servlet-api "2.5"]
                  [org.clojure/tools.macro "0.1.5"]
-                 [clout "2.1.0"]]
+                 [zhu.road/clout "2.1.0"]]
   :aot [road.core  road.filter road.router])
