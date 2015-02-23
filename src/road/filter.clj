@@ -19,9 +19,11 @@
     		   (.getRealPath "WEB-INF/classes/web.clj")))))
 
 (defn -doFilter [this request response filter-chain]
-  (println "do filter") (println (str app)) 
-    (.setStatus response 200) 
-      (.write (.getWriter response) (app request)))
+  (println "do filter")
+  (let [ret (app request)] 
+    (if (nil? ret) 
+          ((.setStatus response 404) (.write (.getWriter response) "page not found")) 
+          ((.setStatus response 200) (.write (.getWriter response) ret)))))
 
 (defn -destroy [this]
   (println "destroy filter"))

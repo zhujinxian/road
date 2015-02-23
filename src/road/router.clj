@@ -3,37 +3,37 @@
             [clout.core :as clout]))
 
 (defn- convert [val type]
-    (cond (= "Integer" type) (Integer/parseInt val)
-                  (= "Float" type) (Float/parseFloat val)
-                  (= "Double" type) (Double/parseDouble val)
-                  :else val))
+  (cond (= "Integer" type) (Integer/parseInt val)
+        (= "Float" type) (Float/parseFloat val)
+        (= "Double" type) (Double/parseDouble val)
+        :else val))
 
 (defn- get-tag [arg]
-    (-> arg meta :tag str))
+  (-> arg meta :tag str))
 
 (defn- convert-type-to-string [args]
-    (-> (map str args) vec))
+  (-> (map str args) vec))
 
 (defn- get-request-para [name req]
-    (.getParameter req name))
+  (.getParameter req name))
 
 (defn- get-para [arg req]
-    (-> arg str (get-request-para req) (convert (get-tag arg))))
+  (if (= "req" arg) req 
+    (-> arg str (get-request-para req) (convert (get-tag arg)))))
 
+(defn- get-all-paras [req args]
+  (map #(get-para % req) args))
 
-(defn- parse-arguments [f req]
-    (println  (meta (var f)))
-    (-> (meta (var f)) :arglists first (#(map get-para req)) vec))
+(defn parse-arguments [f req]
+  (-> (meta f) :arglists first (#(get-all-paras req %))  vec))
 
 (defn- prepare-route [route]
   #(re-matches (re-pattern route) %))
 
-
 (defn- if-route [route handler]
   (fn [request]
-    (if (route (.getContextPath request))
+    (if (route (.getServletPath request))
       (handler request))))
-
 
 (defn- if-method [method handler]
   (fn [request]
@@ -51,7 +51,7 @@
 
 (defn compile-route [method path handler]
   `(make-route
-     ~method ~(prepare-route path) ~handler))
+     ~method ~(prepare-route path) (var ~handler)))
 
 (defn routing [request & handlers] 
   (some #(% request) handlers))
@@ -62,7 +62,6 @@
 (defmacro defroutes [name & routes]
     (let [[name routes] (macro/name-with-attributes name routes)]
       `(def ~name (routes ~@routes))))
-
 
 (defmacro GET [path handler]
   (compile-route "GET" path handler))
