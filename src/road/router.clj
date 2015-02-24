@@ -17,7 +17,8 @@
 (defn- get-request-para [name req paras]
   (or (.getParameter req name) ((keyword name) paras)))
 
-(defn- get-para [arg req paras] 
+(defn- get-para [arg req paras]
+  (println (str "arg: " arg)) 
   (if (= "req" arg) req 
     (-> arg str (get-request-para req paras) (convert (get-tag arg)))))
 

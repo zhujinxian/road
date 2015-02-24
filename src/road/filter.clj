@@ -4,7 +4,8 @@
                          ServletRequest
                          ServletResponse)
           (javax.servlet.http HttpServletRequest
-                              HttpServletResponse)))
+                              HttpServletResponse))
+  (:require [road.render :as render]))
 
 (gen-class
       :name zhu.road.Filter
@@ -12,18 +13,22 @@
       :prefix "-"
       :main false)
 
+(def context)
+
 (def app)
 
 (defn -init [this conf]
+  (def context (.getServletContext conf)) 
   (def app (load-file (-> (.getServletContext conf)
     		   (.getRealPath "WEB-INF/classes/web.clj")))))
 
-(defn -doFilter [this request response filter-chain]
+(defn -doFilter [this request response chain]
   (println "do filter")
   (let [ret (app request)] 
     (if (nil? ret) 
-          ((.setStatus response 404) (.write (.getWriter response) "page not found")) 
-          ((.setStatus response 200) (.write (.getWriter response) ret)))))
+          (.doFilter chain request response)
+          (render/dispatch context response ret)))) 
+          ;(do (.setContentType response "text/plain") (.print (.getWriter response) ret)))))
 
 (defn -destroy [this]
   (println "destroy filter"))
