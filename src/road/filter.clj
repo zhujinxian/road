@@ -8,7 +8,7 @@
   (:require [road.render :as render]))
 
 (gen-class
-      :name zhu.road.Filter
+      :name road.Filter
       :implements [javax.servlet.Filter]
       :prefix "-"
       :main false)
