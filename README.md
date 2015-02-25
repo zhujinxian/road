@@ -90,6 +90,10 @@ package war:
 
     $ lein uberwar
 
+## Example
+
+<https://github.com/zhujinxian/web-test.git>
+
 ## License
 
 Copyright © 2015 FIXME
