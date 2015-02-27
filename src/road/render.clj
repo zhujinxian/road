@@ -1,12 +1,15 @@
 (ns road.render
   (:require [clojure.string :as string]
-            [hiccup.page :as page]))
+            [hiccup.page :as page]
+            [ring.util.response :as resp]))
 
-(defn text [res text]
-  (do (.setContentType res "text/plain") (-> res .getWriter (.print text))))
+(defn text [text]
+  (-> (resp/response text) 
+    (#(resp/content-type %1 "text/plain")) (#(resp/charset %1 "utf-8"))))
 
-(defn json [res text]
-  (do (.setContentType res "application/json") (-> res .getWriter (.print text))))
+(defn json [text]
+  (-> (resp/response text) 
+    (#(resp/content-type %1 "application/json")) (#(resp/charset %1 "utf-8"))))
 
 (defn- get-key [x]
   (keyword (string/replace x "$" "")))
@@ -18,18 +21,17 @@
   (println tmt) (println ret)
   (string/replace tmt #"\$\S+\$" #(get-val %1 ret)))
 
-(defn- get-path [context path]
+(defn- get-path-1 [context path]
   (.getRealPath context (str "WEB-INF/classes/" path)))
 
-(defn- create-html [context ret]
-  (println (-> ret :hiccup (#(get-path context %1))))
-  (let [tmt (-> ret :hiccup (#(get-path context %1)) slurp)]
-    (-> (parse-template tmt ret) load-string page/html5)))
+(defn- create-html [ret template] 
+  (-> (parse-template template ret) load-string page/html5))
 
-(defn hiccup [context res ret]
-  (do (.setContentType res "text/html") (-> res .getWriter (.print (create-html context ret)))))
+(defn hiccup [ret template] 
+  (-> (resp/response (create-html ret template)) 
+    (#(resp/content-type %1 "text/html")) (#(resp/charset %1 "utf-8"))))
 
-(defn dispatch [context res ret]
-  (cond (:text ret) (text res (:text ret))
-        (:json ret) (json res (:json ret))
-        (:hiccup ret) (hiccup context res ret)))
+(defn dispatch [ret template]
+  (cond (:text ret) (text (:text ret))
+        (:json ret) (json (:json ret))
+        (:hiccup ret) (hiccup ret template)))

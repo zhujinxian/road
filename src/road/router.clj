@@ -15,11 +15,12 @@
   (-> (map str args) vec))
 
 (defn- get-request-para [name req paras]
-  (or (.getParameter req name) ((keyword name) paras)))
+  (or (get (:params req) name) ((keyword name) paras) 
+      (throw (Exception. (str "No such parameter exception: " name)))))
 
 (defn- get-para [arg req paras]
   (println (str "arg: " arg)) 
-  (if (= "req" arg) req 
+  (if (= "req" (str arg)) req 
     (-> arg str (get-request-para req paras) (convert (get-tag arg)))))
 
 (defn- get-all-paras [req paras args]
@@ -29,21 +30,22 @@
   (-> (meta f) :arglists first (#(get-all-paras req paras %))  vec))
 
 (defn- prepare-route [route]
-  ;#(re-matches (re-pattern route) %))
   (clout/route-compile route))
 
 (defn- if-route [route handler]
   (fn [request]
-    (let [ret  (clout/route-matches route (.getServletPath request))]
-      (println ret)
-      (if-not (nil? ret) (handler request ret) (println "not found url"))))) 
+    (println (:uri request))
+    (if-let [ret (clout/route-matches route request)] 
+      (handler request ret)))) 
 
 (defn- if-method [method handler]
   (fn [request]
-    (if (= method (. request getMethod)) 
+  (println (:request-method  request))
+    (if (= method (:request-method  request)) 
            (handler request))))
 
 (defn- process-request [handler request paras]
+  (println handler " " request " " paras)
   (apply handler (parse-arguments handler request paras)))
 
 (defn make-route  [method path handler]
@@ -56,7 +58,9 @@
   `(make-route
      ~method ~(prepare-route path) (var ~handler)))
 
-(defn routing [request & handlers] 
+(defn routing [request & handlers]
+ ;(println "routing-----------") (println request) 
+ ;(println (:request-method request)) 
   (some #(% request) handlers))
 
 (defn routes [& handlers] 
@@ -67,10 +71,10 @@
       `(def ~name (routes ~@routes))))
 
 (defmacro GET [path handler]
-  (compile-route "GET" path handler))
+  (compile-route :get path handler))
 
 (defmacro POST [path handler]
-  (compile-route "POST" path handler))
+  (compile-route :post path handler))
 
 (defn route-test [msg]
   (println msg))
