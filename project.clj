@@ -1,4 +1,4 @@
-(defproject road "0.1.0-SNAPSHOT"
+(defproject road "0.1.0"
   :description "Road is a clojure web framework through packing java severlet filter."
   :url "https://github.com/zhujinxian/road"
   :license {:name "Eclipse Public License"
