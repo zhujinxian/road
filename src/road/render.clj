@@ -21,9 +21,6 @@
   (println tmt) (println ret)
   (string/replace tmt #"\$\S+\$" #(get-val %1 ret)))
 
-(defn- get-path-1 [context path]
-  (.getRealPath context (str "WEB-INF/classes/" path)))
-
 (defn- create-html [ret template] 
   (-> (parse-template template ret) load-string page/html5))
 
@@ -35,3 +32,4 @@
   (cond (:text ret) (text (:text ret))
         (:json ret) (json (:json ret))
         (:hiccup ret) (hiccup ret template)))
+

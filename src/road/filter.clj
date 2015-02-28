@@ -1,10 +1,4 @@
 (ns road.filter
-  (import (javax.servlet FilterConfig
-                         FilterChain
-                         ServletRequest
-                         ServletResponse)
-          (javax.servlet.http HttpServletRequest
-                              HttpServletResponse))
   (:require [road.render :as render]
             [ring.util.servlet :as servlet]
             [ring.middleware.params :as params]))

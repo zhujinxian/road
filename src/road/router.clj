@@ -1,6 +1,7 @@
 (ns road.router
   (:require [clojure.tools.macro :as macro]
-            [clout.core :as clout]))
+            [clout.core :as clout]
+            [clojure.tools.logging :as log]))
 
 (defn- convert [val type]
   (cond (= "Integer" type) (Integer/parseInt val)
@@ -59,24 +60,18 @@
      ~method ~(prepare-route path) (var ~handler)))
 
 (defn routing [request & handlers]
- ;(println "routing-----------") (println request) 
- ;(println (:request-method request)) 
   (some #(% request) handlers))
 
 (defn routes [& handlers] 
   #(apply routing % handlers))
 
 (defmacro defroutes [name & routes]
-    (let [[name routes] (macro/name-with-attributes name routes)]
-      `(def ~name (routes ~@routes))))
+  (let [[name routes] (macro/name-with-attributes name routes)] 
+    `(def ~name (routes ~@routes))))
 
 (defmacro GET [path handler]
   (compile-route :get path handler))
 
 (defmacro POST [path handler]
   (compile-route :post path handler))
-
-(defn route-test [msg]
-  (println msg))
-
 
