@@ -29,7 +29,8 @@
     (#(resp/content-type %1 "text/html")) (#(resp/charset %1 "utf-8"))))
 
 (defn dispatch [ret template]
-  (cond (:text ret) (text (:text ret))
+  (cond (:$r ret) ((:$r ret) ret template) 
+        (:text ret) (text (:text ret))
         (:json ret) (json (:json ret))
         (:hiccup ret) (hiccup ret template)))
 

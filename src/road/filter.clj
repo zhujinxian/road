@@ -22,7 +22,10 @@
     (-> (.getRealPath ctx (str "WEB-INF/classes/views/" fname)) slurp))) 
 
 (defn -init [this conf]
-  (def context (.getServletContext conf)) 
+  (def context (.getServletContext conf))
+  ;(println (.getInitParameter context "ring-handler")))
+  ;(if-let [ring-handler-name (.getInitParameter context "ring-handler")] 
+    ;(def handler (load-string ring-handler-name)))) 
   (def handler (load-file (-> (.getServletContext conf)
     		   (.getRealPath "WEB-INF/classes/web.clj")))))
 

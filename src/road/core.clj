@@ -18,10 +18,10 @@
 (defmacro make-defroutes [name routes] 
   `(defroutes ~name ~@routes))
 
-(defn cons-handler-render [opts route]
-   #(if-let [ret (route (params/params-request %1))]
+(defn cons-handler-render [route]
+   #(if-let [ret ((params/wrap-params route) %1)]
      (render/dispatch ret (get-template ret)) (resp/not-found "not found page")))
 
-(defmacro make-road-handler [opts & routes]
-  `(cons-handler-render ~opts (make-defroutes road-router# ~routes))) 
+(defmacro defroad [& routes]
+  `(cons-handler-render (make-defroutes road-router# ~routes))) 
 
