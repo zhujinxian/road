@@ -2,13 +2,6 @@
 
 Road is a clojure web framework through packing java severlet filter. 
 
-## Dependencies
-
-    [zhu/clout "0.0.2"]
-     
-    
-    [hiccup "1.0.5"]
-
 ## Package plugin
 
     [zhu/leiningen-war "0.0.1"]
@@ -28,7 +21,7 @@ modify project.clj as:
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [road "0.1.0-SNAPSHOT"]]
+                 [road "0.2.0-rc"]]
   :plugins [[zhu/leiningen-war "0.0.1"]]
   :war {:webxml "web.xml"}
   :uberwar {:webxml "web.xml"}
@@ -41,6 +34,11 @@ create web.xml in resource directory, add road.filter to it.
 web.xml
 
 ```xml
+    <context-param>
+        <param-name>ring-handler</param-name>
+	<param-value>web-test.core/road</param-value>
+    </context-param>
+
     <filter>
         <filter-name>RoadFilter</filter-name>
         <filter-class>road.Filter</filter-class>
@@ -56,28 +54,44 @@ web.xml
 ```
 
 
-add web.clj to resources directory
+define web-test.core/road in src directory
 
-web.clj
 
 ```clojure
-(ns web.main
-  (:use [road.router]))
+(ns web-test.core (:gen-class)
+  (:use [road.core])
+  (:require [road.core :as road]
+            [ring.middleware.params :as params]
+            [ring.util.response :as resp]
+            [clojure.java.io :as io]
+            [clojure.tools.logging :as log]
+            [ring.adapter.jetty :as jetty]))
 
-(route-test "test web-test")
+(defn render-test [ret tmt]
+  (-> (resp/response "------render----test------") 
+    (#(resp/content-type %1 "text/plain"))))
+
+(defn foo
+  "I don't do a whole lot."
+  [x]
+  (str "来自源码目录的参数：" x))
 
 (defn handler [^Integer x]
-  {:text (str "hello world, road goes sucess!" x)})
+    {:$r render-test :text (str "hello world, road goes sucess!" (foo x))})
 
 (defn home [req content ^Integer num]
-  {:hiccup "home.clj" :content (str "home" content) :num num})
+    {:hiccup "home.clj" :content (str "home" content) :num num})
 
-(defroutes app 
-  (GET "/web-test-0.1.0-SNAPSHOT-standalone" handler)
-  (GET "/home/:num{\\d+}" home))
+(defroad road (GET "/web-test-0.1.0-SNAPSHOT-standalone/main" handler) 
+              (GET "/web-test-0.1.0-SNAPSHOT-standalone/home/:num{\\d+}" home))
+
+(defn -main [& args]
+  (log/info "---------log4j test-------")
+  (jetty/run-jetty road {:port 3000}))
+
 ```
 
-**add home.clj to resources directory
+**add home.clj to resources/views directory
 
 home.clj (clojure hiccup template)
 
