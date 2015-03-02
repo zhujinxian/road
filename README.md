@@ -1,6 +1,6 @@
 # Road
 
-Road is a clojure web framework through packing java severlet filter. 
+Road is a clojure web framework through packing java severlet filter or making a ring handler. 
 
 ## Package plugin
 
@@ -99,6 +99,11 @@ home.clj (clojure hiccup template)
 [:span {:class "foo"} "bar" $content$ $num$]
 ```
 
+## Run
+
+run as ring handler in jetty adapter
+  
+    $ lein run
 
 package war:
 
