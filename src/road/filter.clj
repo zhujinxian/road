@@ -1,5 +1,6 @@
 (ns road.filter
   (:require [road.render :as render]
+            [clojure.string :as str]
             [ring.util.servlet :as servlet]
             [ring.middleware.params :as params]))
 
@@ -23,17 +24,14 @@
 
 (defn -init [this conf]
   (def context (.getServletContext conf))
-  ;(println (.getInitParameter context "ring-handler")))
-  ;(if-let [ring-handler-name (.getInitParameter context "ring-handler")] 
-    ;(def handler (load-string ring-handler-name)))) 
-  (def handler (load-file (-> (.getServletContext conf)
-    		   (.getRealPath "WEB-INF/classes/web.clj")))))
+  (if-let [ring-handler-name (.getInitParameter context "ring-handler")] 
+    (def handler (load-string 
+                   (str "(require '[" (first (str/split ring-handler-name #"/"))  "]) " ring-handler-name))))) 
 
 (defn -doFilter [this request response chain]
   (println "do filter")
   (if-let [ret (-> request 
-                 (#(build-ring-req %1 context)) params/params-request handler)] 
-    (let [ring-res (render/dispatch ret (get-template context ret))] (servlet/update-servlet-response response ring-res))
+                 (#(build-ring-req %1 context)) handler)] (servlet/update-servlet-response response ret) 
     (.doFilter chain request response))) 
 
 (defn -destroy [this]

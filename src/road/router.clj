@@ -20,7 +20,6 @@
       (throw (Exception. (str "No such parameter exception: " name)))))
 
 (defn- get-para [arg req paras]
-  (println (str "arg: " arg)) 
   (if (= "req" (str arg)) req 
     (-> arg str (get-request-para req paras) (convert (get-tag arg)))))
 
@@ -35,7 +34,7 @@
 
 (defn- if-route [route handler]
   (fn [request]
-    (println (:uri request))
+    (log/debug "HTTP URI: " (:uri request))
     (if-let [ret (clout/route-matches route request)] 
       (handler request ret)))) 
 
@@ -46,7 +45,8 @@
            (handler request))))
 
 (defn- process-request [handler request paras]
-  (println handler " " request " " paras)
+  (log/debug "Road-handler: " handler)
+  (log/debug "Ring-request: " request)
   (apply handler (parse-arguments handler request paras)))
 
 (defn make-route  [method path handler]
@@ -68,10 +68,4 @@
 (defmacro defroutes [name & routes]
   (let [[name routes] (macro/name-with-attributes name routes)] 
     `(def ~name (routes ~@routes))))
-
-(defmacro GET [path handler]
-  (compile-route :get path handler))
-
-(defmacro POST [path handler]
-  (compile-route :post path handler))
 
