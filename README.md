@@ -29,7 +29,7 @@ modify project.clj as:
   :aot [web-test.core])
 ```
 
-create web.xml in resource directory, add road.filter to it.
+create web.xml in project directory, add road.filter to it.
 
 web.xml
 
