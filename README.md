@@ -8,11 +8,30 @@ Road is a clojure web framework through packing java severlet filter or making a
 
 ## Usage
 
-create a web project:
+create a road project:
 
-    $ lein new web-test
+    $ lein new road web-test
 
-modify project.clj as:
+## Run
+
+run as ring handler in jetty adapter
+  
+    $ lein run
+
+## package
+
+package jar running standalone or as ring handler
+
+    $ lein uberjar
+
+package war running in web container:
+
+    $ lein uberwar
+
+
+## Example
+
+project.clj as:
 
 ```clojure
 (defproject web-test "0.1.0-SNAPSHOT"
@@ -29,7 +48,7 @@ modify project.clj as:
   :aot [web-test.core])
 ```
 
-create web.xml in project directory, add road.filter to it.
+web.xml for package in war
 
 web.xml
 
@@ -54,7 +73,7 @@ web.xml
 ```
 
 
-define web-test.core/road in src directory
+web-test.core/core.clj
 
 
 ```clojure
@@ -91,25 +110,14 @@ define web-test.core/road in src directory
 
 ```
 
-**add home.clj to resources/views directory
-
-home.clj (clojure hiccup template)
+resources/views/home.clj
 
 ```clojure
 [:span {:class "foo"} "bar" $content$ $num$]
 ```
 
-## Run
 
-run as ring handler in jetty adapter
-  
-    $ lein run
-
-package war:
-
-    $ lein uberwar
-
-## Example
+## The whole Example
 
 <https://github.com/zhujinxian/web-test.git>
 
