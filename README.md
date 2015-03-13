@@ -2,10 +2,6 @@
 
 Road is a clojure web framework through packing java severlet filter or making a ring handler. 
 
-## Package plugin
-
-    [zhu/leiningen-war "0.0.1"]
-
 ## Usage
 
 create a road project:
@@ -117,7 +113,7 @@ resources/views/home.clj
 ```
 
 
-## The whole Example
+## The Whole Example
 
 <https://github.com/zhujinxian/web-test.git>
 
