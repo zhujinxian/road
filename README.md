@@ -1,5 +1,7 @@
 # Road
 
+[![Join the chat at https://gitter.im/zhujinxian/road](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/zhujinxian/road?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Road is a clojure web framework through packing java severlet filter or making a ring handler. 
 
 ## Usage
