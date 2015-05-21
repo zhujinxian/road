@@ -5,11 +5,11 @@
 
 (defn text [text]
   (-> (resp/response text) 
-    (#(resp/content-type %1 "text/plain")) (#(resp/charset %1 "utf-8"))))
+    (resp/content-type "text/plain") (resp/charset "utf-8")))
 
 (defn json [text]
   (-> (resp/response text) 
-    (#(resp/content-type %1 "application/json")) (#(resp/charset %1 "utf-8"))))
+    (resp/content-type "application/json") (resp/charset "utf-8")))
 
 (defn- get-key [x]
   (keyword (string/replace x "$" "")))
@@ -26,7 +26,7 @@
 
 (defn hiccup [ret template] 
   (-> (resp/response (create-html ret template)) 
-    (#(resp/content-type %1 "text/html")) (#(resp/charset %1 "utf-8"))))
+    (resp/content-type "text/html")) (resp/charset"utf-8"))
 
 (defn dispatch [ret template]
   (cond (:$r ret) ((:$r ret) ret template) 
